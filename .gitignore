@@ -1,0 +1,22 @@
+# Created by .ignore support plugin (hsz.mobi)  
+
+### Maven
+target/  
+
+# IntelliJ  
+/out/  
+.idea_modules/
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse
+.classpath
+/.project
+.project
+.settings
+
+# OS
+.DS_Store
+*.swp
