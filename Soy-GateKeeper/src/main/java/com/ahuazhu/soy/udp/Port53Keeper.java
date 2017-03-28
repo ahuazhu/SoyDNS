@@ -1,8 +1,10 @@
 package com.ahuazhu.soy.udp;
 
+import com.ahuazhu.soy.Soy;
+import com.ahuazhu.soy.exception.SoyException;
+import com.ahuazhu.soy.modal.Request;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
-import org.xbill.DNS.*;
 
 import java.io.IOException;
 import java.net.*;
@@ -21,12 +23,12 @@ public class Port53Keeper implements InitializingBean {
     private static final int UDP_LEN = 512;
 
 
-    private DatagramSocket socket;
+    private DatagramSocket udpSocket;
 
     public void listen() {
         try {
             InetAddress addr = Inet4Address.getByName(LISTENER_IP);
-            socket = new DatagramSocket(DNS_PORT, addr);
+            udpSocket = new DatagramSocket(DNS_PORT, addr);
         } catch (IOException e) {
             System.err.println("Startup fail, 53 port is taken or has no privilege. Check if you are running in root, or another DNS server is running.");
             System.exit(-1);
@@ -39,39 +41,12 @@ public class Port53Keeper implements InitializingBean {
             DatagramPacket inPacket = new DatagramPacket(in, in.length);
             inPacket.setLength(in.length);
             try {
-                socket.receive(inPacket);
-                Message query = new Message(inPacket.getData());
-                System.out.println(query);
-
-
-                Message answer = new Message(query.getHeader().getID());
-                //Name name, int dclass, long ttl, InetAddress address
-                Record question = query.getQuestion();
-
-                Record record = new RecordBuilder()
-                        .dclass(question.getDClass())
-                        .name(question.getName())
-                        .answer("10.11.12.13")
-                        .type(question.getType())
-                        .toRecord();
-
-                answer.addRecord(record, Section.ANSWER);
-
-                byte[] response = answer.toWire();
-                DatagramPacket outPacket = new DatagramPacket(response,
-                        response.length, inPacket.getAddress(),
-                        inPacket.getPort());
-
-                outPacket.setData(response);
-                outPacket.setLength(response.length);
-                outPacket.setAddress(inPacket.getAddress());
-                outPacket.setPort(inPacket.getPort());
-                socket.send(outPacket);
-
+                udpSocket.receive(inPacket);
+                Soy.fire(new Request(udpSocket, inPacket));
             } catch (SocketException e) {
                 System.err.println("Socket error " + e.getMessage());
                 break;
-            } catch (IOException e) {
+            } catch (IOException | SoyException e) {
                 e.printStackTrace();
             }
         }

@@ -1,4 +1,4 @@
-package com.ahuazhu.soy.udp;
+package com.ahuazhu.soy.utils;
 
 import org.xbill.DNS.*;
 
