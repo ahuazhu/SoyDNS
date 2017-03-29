@@ -12,7 +12,7 @@ import java.net.*;
 /**
  * Created by zhengwenzhu on 2017/3/28.
  */
-@Component
+//@Component
 public class Port53Keeper implements InitializingBean {
 
 
