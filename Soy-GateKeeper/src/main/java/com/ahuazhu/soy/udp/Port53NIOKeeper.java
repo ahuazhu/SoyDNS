@@ -1,5 +1,10 @@
 package com.ahuazhu.soy.udp;
 
+import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.japi.pf.ReceiveBuilder;
 import com.ahuazhu.soy.Soy;
 import com.ahuazhu.soy.exception.SoyException;
 import com.ahuazhu.soy.modal.Request;
@@ -48,6 +53,9 @@ public class Port53NIOKeeper implements InitializingBean {
 
             System.err.println("Soy DNS server started ob port 53");
 
+            ActorSystem system = ActorSystem.create("actor-demo-java");
+            ActorRef hello = system.actorOf(Props.create(Hello.class));
+
             while (true) {
                 int n = selector.select();
                 if (n > 0) {
@@ -57,7 +65,8 @@ public class Port53NIOKeeper implements InitializingBean {
                         iterator.remove();
                         if (key.isReadable()) {
 //                            es.submit(() -> {
-                                process(key);
+//                                process(key);
+                            hello.tell(key, hello);
 //                                return null;
 //                            });
 
@@ -74,7 +83,15 @@ public class Port53NIOKeeper implements InitializingBean {
 
     }
 
-    private void process(SelectionKey key) throws IOException {
+    private static class Hello extends AbstractActor {
+
+        @Override
+        public Receive createReceive() {
+            return ReceiveBuilder.create().match(SelectionKey.class, Port53NIOKeeper::process).build();
+        }
+    }
+
+    private static void process(SelectionKey key) throws IOException {
         DatagramChannel datagramChannel = (DatagramChannel) key.channel();
 
         ByteBuffer byteBuffer = ByteBuffer.allocate(UDP_LEN);
@@ -86,6 +103,7 @@ public class Port53NIOKeeper implements InitializingBean {
 //                            System.out.println(query);
         Message answer = new Message(query.getHeader().getID());
         Record question = query.getQuestion();
+        if (question == null) return;
         Record record = new RecordBuilder()
                 .dclass(question.getDClass())
                 .name(question.getName())
