@@ -1,8 +1,5 @@
 package com.ahuazhu.soy.udp;
 
-import com.ahuazhu.soy.Soy;
-import com.ahuazhu.soy.exception.SoyException;
-import com.ahuazhu.soy.modal.Request;
 import com.ahuazhu.soy.utils.RecordBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
@@ -11,16 +8,14 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by zhengwenzhu on 2017/3/28.
@@ -36,7 +31,7 @@ public class Port53NIOKeeper implements InitializingBean {
     private static final int UDP_LEN = 512;
 
 
-//    private final static ExecutorService es = Executors.newFixedThreadPool(10);
+    private final static ExecutorService es = ExecutorUtils.newBlockingExecutors(1);
 
     public void listen() {
         try {
@@ -55,11 +50,17 @@ public class Port53NIOKeeper implements InitializingBean {
                     while (iterator.hasNext()) {
                         SelectionKey key = (SelectionKey) iterator.next();
                         iterator.remove();
+                        ByteBuffer byteBuffer = ByteBuffer.allocate(UDP_LEN);
+
                         if (key.isReadable()) {
-//                            es.submit(() -> {
-                                process(key);
-//                                return null;
-//                            });
+                            byteBuffer.clear();
+                            DatagramChannel datagramChannel = (DatagramChannel) key.channel();
+                            InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(byteBuffer);
+
+                            es.submit(() -> {
+                                process(byteBuffer.array(), datagramChannel, address);
+                                return null;
+                            });
 
                         }
                     }
@@ -74,16 +75,8 @@ public class Port53NIOKeeper implements InitializingBean {
 
     }
 
-    private void process(SelectionKey key) throws IOException {
-        DatagramChannel datagramChannel = (DatagramChannel) key.channel();
-
-        ByteBuffer byteBuffer = ByteBuffer.allocate(UDP_LEN);
-        byteBuffer.clear();
-        // 读取
-        InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(byteBuffer);
-
-        Message query = new Message(byteBuffer.array());
-//                            System.out.println(query);
+    private void process(byte[] byteBuffer, DatagramChannel channel, InetSocketAddress address) throws IOException {
+        Message query = new Message(byteBuffer);
         Message answer = new Message(query.getHeader().getID());
         Record question = query.getQuestion();
         Record record = new RecordBuilder()
@@ -94,13 +87,8 @@ public class Port53NIOKeeper implements InitializingBean {
                 .toRecord();
 
         answer.addRecord(record, Section.ANSWER);
-
         byte[] answerData = answer.toWire();
-
-        byteBuffer.clear();
-        byteBuffer.put(answerData);
-        byteBuffer.flip();
-        datagramChannel.send(byteBuffer, address);
+        channel.send(ByteBuffer.wrap(answerData), address);
     }
 
 
