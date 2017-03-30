@@ -18,6 +18,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by zhengwenzhu on 2017/3/28.
@@ -26,27 +29,25 @@ import java.util.Iterator;
 public class Port53NIOKeeper implements InitializingBean {
 
 
-    public static final int DNS_PORT = 53;
+    public static final int DNS_PORT = 5553;
 
     public static final String LISTENER_IP = "0.0.0.0";
 
     private static final int UDP_LEN = 512;
 
-    private DatagramChannel channel;
 
-    private Selector selector;
+//    private final static ExecutorService es = Executors.newFixedThreadPool(10);
 
     public void listen() {
         try {
-            channel = DatagramChannel.open();
+            DatagramChannel channel = DatagramChannel.open();
             channel.configureBlocking(false);
             channel.socket().bind(new InetSocketAddress(DNS_PORT));
-            selector = Selector.open();
+            Selector selector = Selector.open();
             channel.register(selector, SelectionKey.OP_READ);
 
             System.err.println("Soy DNS server started ob port 53");
 
-            ByteBuffer byteBuffer = ByteBuffer.allocate(UDP_LEN);
             while (true) {
                 int n = selector.select();
                 if (n > 0) {
@@ -55,50 +56,11 @@ public class Port53NIOKeeper implements InitializingBean {
                         SelectionKey key = (SelectionKey) iterator.next();
                         iterator.remove();
                         if (key.isReadable()) {
-                            DatagramChannel datagramChannel = (DatagramChannel) key.channel();
-                            byteBuffer.clear();
-                            // 读取
-                            InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(byteBuffer);
-//                            System.out.println(new String(byteBuffer.array()));
-                            System.out.println(Arrays.toString(byteBuffer.array()));
+//                            es.submit(() -> {
+                                process(key);
+//                                return null;
+//                            });
 
-                            // 删除缓冲区中的数据
-//                            byteBuffer.clear();
-//
-//                            String message = "data come from server";
-//                            byteBuffer.put(message.getBytes());
-//                            byteBuffer.flip();
-//                            datagramChannel.send(byteBuffer, address);
-
-                            Message query = new Message(byteBuffer);
-                            System.out.println(query);
-                            Message answer = new Message(query.getHeader().getID());
-                            Record question = query.getQuestion();
-                            Record record = new RecordBuilder()
-                                    .dclass(question.getDClass())
-                                    .name(question.getName())
-                                    .answer("10.11.12.13")
-                                    .type(question.getType())
-                                    .toRecord();
-
-                            answer.addRecord(record, Section.ANSWER);
-
-                            byte[] answerData = answer.toWire();
-
-                            byteBuffer.clear();
-                            byteBuffer.put(answerData);
-                            byteBuffer.flip();
-                            datagramChannel.send(byteBuffer, address);
-
-//                            DatagramPacket outPacket = new DatagramPacket(answerData,
-//                                    answerData.length, inPacket.getAddress(),
-//                                    inPacket.getPort());
-//
-//                            outPacket.setData(answerData);
-//                            outPacket.setLength(answerData.length);
-//                            outPacket.setAddress(inPacket.getAddress());
-//                            outPacket.setPort(inPacket.getPort());
-//                            request.getUdpSocket().send(outPacket);
                         }
                     }
                 }
@@ -112,6 +74,34 @@ public class Port53NIOKeeper implements InitializingBean {
 
     }
 
+    private void process(SelectionKey key) throws IOException {
+        DatagramChannel datagramChannel = (DatagramChannel) key.channel();
+
+        ByteBuffer byteBuffer = ByteBuffer.allocate(UDP_LEN);
+        byteBuffer.clear();
+        // 读取
+        InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(byteBuffer);
+
+        Message query = new Message(byteBuffer.array());
+//                            System.out.println(query);
+        Message answer = new Message(query.getHeader().getID());
+        Record question = query.getQuestion();
+        Record record = new RecordBuilder()
+                .dclass(question.getDClass())
+                .name(question.getName())
+                .answer("10.11.12.13")
+                .type(question.getType())
+                .toRecord();
+
+        answer.addRecord(record, Section.ANSWER);
+
+        byte[] answerData = answer.toWire();
+
+        byteBuffer.clear();
+        byteBuffer.put(answerData);
+        byteBuffer.flip();
+        datagramChannel.send(byteBuffer, address);
+    }
 
 
     @Override
