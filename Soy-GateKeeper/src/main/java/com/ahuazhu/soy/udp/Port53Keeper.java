@@ -12,11 +12,11 @@ import java.net.*;
 /**
  * Created by zhengwenzhu on 2017/3/28.
  */
-//@Component
+@Component
 public class Port53Keeper implements InitializingBean {
 
 
-    public static final int DNS_PORT = 53;
+    public static final int DNS_PORT = 5553;
 
     public static final String LISTENER_IP = "0.0.0.0";
 
@@ -24,6 +24,8 @@ public class Port53Keeper implements InitializingBean {
 
 
     private DatagramSocket udpSocket;
+
+    private QueryEngine engine = new QueryEngine(10, 100000);
 
     public void listen() {
         try {
@@ -42,7 +44,8 @@ public class Port53Keeper implements InitializingBean {
             inPacket.setLength(in.length);
             try {
                 udpSocket.receive(inPacket);
-                Soy.fire(new Request(udpSocket, inPacket));
+//                Soy.fire(new Request(udpSocket, inPacket));
+                engine.submit(new Request(udpSocket, inPacket));
             } catch (SocketException e) {
                 System.err.println("Socket error " + e.getMessage());
                 break;

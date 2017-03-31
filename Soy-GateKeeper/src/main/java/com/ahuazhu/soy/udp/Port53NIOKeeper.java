@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Created by zhengwenzhu on 2017/3/28.
  */
-@Component
+//@Component
 public class Port53NIOKeeper implements InitializingBean {
 
 
@@ -31,7 +31,7 @@ public class Port53NIOKeeper implements InitializingBean {
     private static final int UDP_LEN = 512;
 
 
-    private final static ExecutorService es = ExecutorUtils.newBlockingExecutors(1);
+    private final static ExecutorService es = ExecutorUtils.newBlockingExecutors(10);
 
     public void listen() {
         try {
