@@ -14,7 +14,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -25,8 +24,6 @@ public class Port53NIOKeeper implements InitializingBean {
 
 
     public static final int DNS_PORT = 5553;
-
-    public static final String LISTENER_IP = "0.0.0.0";
 
     private static final int UDP_LEN = 512;
 
