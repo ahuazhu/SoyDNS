@@ -8,7 +8,8 @@ import akka.japi.pf.ReceiveBuilder;
 import com.ahuazhu.soy.Soy;
 import com.ahuazhu.soy.modal.Query;
 import com.lmax.disruptor.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,16 +20,15 @@ import java.util.concurrent.TimeUnit;
  * Created by zhengwenzhu on 2017/3/31.
  */
 public enum Executors implements Executor {
-    SyncExecutor {
+    Sync {
         @Override
         public void execute(Query query) {
             Soy.fire(query);
         }
     },
 
-    ThreadPoolExecutor {
+    ThreadPool {
         private final ExecutorService es = createBlockingExecutors(10);
-        private Logger LOGGER = Logger.getLogger(ThreadPoolExecutor.class);
 
         @Override
         public void execute(Query query) {
@@ -72,6 +72,18 @@ public enum Executors implements Executor {
         }
     };
 
+    Logger logger = LoggerFactory.getLogger(Executors.class);
+
+    public Executor of(String name) {
+
+        Executor e = Executors.valueOf(name);
+        if (e == null) {
+            e = Sync;
+            logger.warn("Executor of {} not found, use {} instead.", name, e.toString());
+        }
+
+        return e;
+    }
 
     ExecutorService createBlockingExecutors(int size) {
         return new ThreadPoolExecutor(size, size, 0L, TimeUnit.MILLISECONDS,
@@ -81,7 +93,7 @@ public enum Executors implements Executor {
                         try {
                             this.put(e);
                         } catch (Exception e1) {
-//                            LOGGER.error(e1);
+                            logger.error("", e1);
                         }
                         return true;
                     }
