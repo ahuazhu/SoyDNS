@@ -1,18 +1,15 @@
 package com.ahuazhu.soy.udp;
 
-import com.ahuazhu.soy.utils.RecordBuilder;
+import com.ahuazhu.soy.executor.Executor;
+import com.ahuazhu.soy.executor.Executors;
+import com.ahuazhu.soy.modal.Query;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
-import org.xbill.DNS.Message;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.Section;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
+import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 
@@ -30,17 +27,25 @@ public class Port53NIOKeeper implements InitializingBean {
 
     private final static ExecutorService es = ExecutorUtils.newBlockingExecutors(1);
 
+    private Executor executor = Executors.SyncExecutor;
+
     public void listen() {
+
+        Selector selector = null;
         try {
             DatagramChannel channel = DatagramChannel.open();
             channel.configureBlocking(false);
             channel.socket().bind(new InetSocketAddress(DNS_PORT));
-            Selector selector = Selector.open();
+            selector = Selector.open();
             channel.register(selector, SelectionKey.OP_READ);
-
             System.err.println("Soy DNS server started ob port 53");
+        } catch (IOException e) {
+            System.err.println("Startup fail, 53 port is taken or has no privilege. Check if you are running in root, or another DNS server is running.");
+            System.exit(-1);
+        }
 
-            while (true) {
+        while (true) {
+            try {
                 int n = selector.select();
                 if (n > 0) {
                     Iterator iterator = selector.selectedKeys().iterator();
@@ -48,44 +53,25 @@ public class Port53NIOKeeper implements InitializingBean {
                         SelectionKey key = (SelectionKey) iterator.next();
                         iterator.remove();
                         ByteBuffer byteBuffer = ByteBuffer.allocate(UDP_LEN);
-
                         if (key.isReadable()) {
                             byteBuffer.clear();
                             DatagramChannel datagramChannel = (DatagramChannel) key.channel();
                             InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(byteBuffer);
-
-                            es.submit(() -> {
-                                process(byteBuffer.array(), datagramChannel, address);
-                                return null;
-                            });
+                            byteBuffer.flip();
+                            Query query = new UdpNioQuery(byteBuffer, new UdpNioResponseWriter(datagramChannel, address));
+                            executor.execute(query);
 
                         }
                     }
                 }
 
-
+            } catch (ClosedSelectorException | ClosedChannelException e) {
+                System.err.println("Channel closed");
+                break;
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
             }
-        } catch (IOException e) {
-            System.err.println("Startup fail, 53 port is taken or has no privilege. Check if you are running in root, or another DNS server is running.");
-            System.exit(-1);
         }
-
-    }
-
-    private void process(byte[] byteBuffer, DatagramChannel channel, InetSocketAddress address) throws IOException {
-        Message query = new Message(byteBuffer);
-        Message answer = new Message(query.getHeader().getID());
-        Record question = query.getQuestion();
-        Record record = new RecordBuilder()
-                .dclass(question.getDClass())
-                .name(question.getName())
-                .answer("10.11.12.13")
-                .type(question.getType())
-                .toRecord();
-
-        answer.addRecord(record, Section.ANSWER);
-        byte[] answerData = answer.toWire();
-        channel.send(ByteBuffer.wrap(answerData), address);
     }
 
 

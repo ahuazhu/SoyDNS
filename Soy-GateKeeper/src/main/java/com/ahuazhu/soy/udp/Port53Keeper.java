@@ -2,9 +2,8 @@ package com.ahuazhu.soy.udp;
 
 import com.ahuazhu.soy.Soy;
 import com.ahuazhu.soy.exception.SoyException;
-import com.ahuazhu.soy.modal.Request;
+import com.ahuazhu.soy.modal.Query;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.*;
@@ -42,7 +41,7 @@ public class Port53Keeper implements InitializingBean {
             inPacket.setLength(in.length);
             try {
                 udpSocket.receive(inPacket);
-                Soy.fire(new Request(udpSocket, inPacket));
+//                Soy.fire(new Query(udpSocket, inPacket));
             } catch (SocketException e) {
                 System.err.println("Socket error " + e.getMessage());
                 break;

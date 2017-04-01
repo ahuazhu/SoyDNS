@@ -1,8 +1,9 @@
 package com.ahuazhu.soy;
 
 import com.ahuazhu.soy.exception.SoyException;
-import com.ahuazhu.soy.modal.Request;
+import com.ahuazhu.soy.modal.Query;
 import com.ahuazhu.soy.modal.RequestContext;
+import com.ahuazhu.soy.modal.ResponseContext;
 import com.ahuazhu.soy.processor.SimpleProcessorChain;
 
 /**
@@ -10,8 +11,10 @@ import com.ahuazhu.soy.processor.SimpleProcessorChain;
  */
 public class Soy {
 
-    public static void fire(Request request) throws SoyException {
-        SimpleProcessorChain.create().process(new RequestContext(request), null);
+    public static void fire(Query query) throws SoyException {
+        SimpleProcessorChain.create()
+                .process(new RequestContext(query.getQueryData()),
+                new ResponseContext(query.getResponseWriter()));
 
     }
 }
