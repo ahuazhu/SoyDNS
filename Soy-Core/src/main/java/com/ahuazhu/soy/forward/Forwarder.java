@@ -1,6 +1,5 @@
 package com.ahuazhu.soy.forward;
 
-import com.ahuazhu.soy.modal.Query;
 import com.ahuazhu.soy.modal.ResponseWriter;
 import org.xbill.DNS.Message;
 

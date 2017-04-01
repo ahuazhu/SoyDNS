@@ -61,8 +61,6 @@ public class DefaultForwarder implements Forwarder {
                 }
             }
 
-
-
             if (!forwarderStarted) {
                 System.err.println("no available port for forwarder, recursive resolution is disable. ");
                 return;
