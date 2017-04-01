@@ -23,7 +23,7 @@ public class Port53NIOKeeper implements InitializingBean {
 
     private static final int UDP_LEN = 512;
 
-    private Executor executor = Executors.SyncExecutor;
+    private Executor executor = Executors.Disruptor;
 
     public void listen() {
 
