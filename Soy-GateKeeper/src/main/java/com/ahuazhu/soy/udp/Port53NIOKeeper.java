@@ -3,6 +3,7 @@ package com.ahuazhu.soy.udp;
 import com.ahuazhu.soy.executor.Executor;
 import com.ahuazhu.soy.executor.Executors;
 import com.ahuazhu.soy.modal.Query;
+import com.ahuazhu.soy.modal.SimpleQuery;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +35,7 @@ public class Port53NIOKeeper implements InitializingBean {
             channel.socket().bind(new InetSocketAddress(DNS_PORT));
             selector = Selector.open();
             channel.register(selector, SelectionKey.OP_READ);
-            System.err.println("Soy DNS server started ob port 53");
+            System.err.println("Soy DNS server started on port " + DNS_PORT);
         } catch (IOException e) {
             System.err.println("Startup fail, 53 port is taken or has no privilege. Check if you are running in root, or another DNS server is running.");
             System.exit(-1);
@@ -54,7 +55,7 @@ public class Port53NIOKeeper implements InitializingBean {
                             DatagramChannel datagramChannel = (DatagramChannel) key.channel();
                             InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(byteBuffer);
                             byteBuffer.flip();
-                            Query query = new UdpNioQuery(byteBuffer, new UdpNioResponseWriter(datagramChannel, address));
+                            Query query = new SimpleQuery(byteBuffer, new UdpNioResponseWriter(datagramChannel, address));
                             executor.execute(query);
 
                         }

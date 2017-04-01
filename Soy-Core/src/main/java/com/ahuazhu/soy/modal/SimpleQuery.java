@@ -1,25 +1,22 @@
-package com.ahuazhu.soy.udp;
-
-import com.ahuazhu.soy.modal.Query;
-import com.ahuazhu.soy.modal.ResponseWriter;
+package com.ahuazhu.soy.modal;
 
 import java.nio.ByteBuffer;
 
 /**
  * Created by zhengwenzhu on 2017/3/31.
  */
-public class UdpNioQuery implements Query {
+public class SimpleQuery implements Query {
 
     private ByteBuffer data;
 
     private ResponseWriter writer;
 
-    public UdpNioQuery(ByteBuffer data, ResponseWriter writer) {
+    public SimpleQuery(ByteBuffer data, ResponseWriter writer) {
         this.data = data;
         this.writer = writer;
     }
 
-    public UdpNioQuery(byte[] data, ResponseWriter writer) {
+    public SimpleQuery(byte[] data, ResponseWriter writer) {
         this.data = ByteBuffer.wrap(data);
         this.writer = writer;
     }
