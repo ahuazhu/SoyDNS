@@ -11,7 +11,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created by zhengwenzhu on 2017/3/28.
@@ -23,9 +22,6 @@ public class Port53NIOKeeper implements InitializingBean {
     public static final int DNS_PORT = 5553;
 
     private static final int UDP_LEN = 512;
-
-
-    private final static ExecutorService es = ExecutorUtils.newBlockingExecutors(1);
 
     private Executor executor = Executors.SyncExecutor;
 

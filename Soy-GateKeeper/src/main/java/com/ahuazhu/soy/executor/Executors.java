@@ -7,28 +7,17 @@ import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 import com.ahuazhu.soy.Soy;
 import com.ahuazhu.soy.modal.Query;
-import com.ahuazhu.soy.udp.ExecutorUtils;
-import com.ahuazhu.soy.utils.RecordBuilder;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
-import org.xbill.DNS.Message;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.Section;
+import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zhengwenzhu on 2017/3/31.
  */
 public enum Executors implements Executor {
-
     SyncExecutor {
         @Override
         public void execute(Query query) {
@@ -37,21 +26,37 @@ public enum Executors implements Executor {
     },
 
     ThreadPoolExecutor {
-        private final ExecutorService es = ExecutorUtils.newBlockingExecutors(1);
+        private final ExecutorService es = createBlockingExecutors(10);
+        private Logger LOGGER = Logger.getLogger(ThreadPoolExecutor.class);
 
         @Override
         public void execute(Query query) {
             es.execute(() -> Soy.fire(query));
         }
+
+        ExecutorService createBlockingExecutors(int size) {
+            return new ThreadPoolExecutor(size, size, 0L, TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>(10000) {
+                        @Override
+                        public boolean offer(Runnable e) {
+                            try {
+                                this.put(e);
+                            } catch (Exception e1) {
+                                LOGGER.error(e1);
+                            }
+                            return true;
+                        }
+                    });
+        }
     },
+
     Akka {
-        ActorSystem system = ActorSystem.create("actor-demo-java");
-        ActorRef soyActor = system.actorOf(Props.create(SoyActor.class));
+        private ActorSystem system = ActorSystem.create("Soy-Actor");
+        private ActorRef soyActor = system.actorOf(Props.create(SoyActor.class));
 
         @Override
         public void execute(Query query) {
             soyActor.tell(query, soyActor);
-
         }
 
         class SoyActor extends AbstractActor {
@@ -62,12 +67,5 @@ public enum Executors implements Executor {
             }
         }
     },
-
-    Quasar {
-        @Override
-        public void execute(Query query) {
-
-        }
-    }
 
 }
