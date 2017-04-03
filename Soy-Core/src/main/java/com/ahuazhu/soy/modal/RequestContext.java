@@ -1,6 +1,7 @@
 package com.ahuazhu.soy.modal;
 
 import com.ahuazhu.soy.exception.SoyException;
+import org.ehcache.Cache;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
@@ -32,4 +33,5 @@ public class RequestContext {
     public Message getMessage() {
         return message;
     }
+
 }

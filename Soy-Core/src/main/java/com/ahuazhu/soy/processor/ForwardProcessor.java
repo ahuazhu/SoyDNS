@@ -15,14 +15,18 @@ import java.io.IOException;
 public class ForwardProcessor implements Processor {
     @Override
     public void process(RequestContext request, ResponseContext response, ProcessorChain chain) throws SoyException {
-        Forwarder forwarder = DefaultForwarder.getInstance();
+        if (response.getResult() == null) {
 
-        try {
-            Message message = request.getMessage();
-            forwarder.forward(message, response.getWriter());
-        } catch (IOException e) {
-            response.setError(e);
+            Forwarder forwarder = DefaultForwarder.getInstance();
+            try {
+                Message message = request.getMessage();
+                forwarder.forward(message, response);
+            } catch (IOException e) {
+                response.setError(e);
+            }
         }
+
+        chain.process(request, response);
     }
 
 }

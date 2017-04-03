@@ -29,7 +29,16 @@ public class CacheProcessor implements Processor {
 
     @Override
     public void process(RequestContext request, ResponseContext response, ProcessorChain chain) throws SoyException {
+        Message message = request.getMessage();
+        Message cached = cache.get(QueryKey.of(message));
+        response.setCache(cache);
+        if (cached != null) {
+            Message m = (Message) cached.clone();
+            m.getHeader().setID(message.getHeader().getID());
+            response.setResult(m);
+        }
 
+        chain.process(request, response);
     }
 
     public static void main(String[] args) {

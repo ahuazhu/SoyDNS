@@ -1,6 +1,6 @@
 package com.ahuazhu.soy.forward;
 
-import com.ahuazhu.soy.modal.ResponseWriter;
+import com.ahuazhu.soy.modal.ResponseContext;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
@@ -10,5 +10,5 @@ import java.io.IOException;
  */
 public interface Forwarder {
 
-    void forward(Message message, ResponseWriter resultWriter) throws IOException;
+    void forward(Message message, ResponseContext response) throws IOException;
 }

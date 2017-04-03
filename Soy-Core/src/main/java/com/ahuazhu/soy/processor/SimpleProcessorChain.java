@@ -16,7 +16,9 @@ public class SimpleProcessorChain implements ProcessorChain {
     public static SimpleProcessorChain create() {
         SimpleProcessorChain chain = new SimpleProcessorChain();
 //        chain.addProcessor(new MockProcessor());
+        chain.addProcessor(new CacheProcessor());
         chain.addProcessor(new ForwardProcessor());
+        chain.addProcessor(new SendProcessor());
         return chain;
     }
 

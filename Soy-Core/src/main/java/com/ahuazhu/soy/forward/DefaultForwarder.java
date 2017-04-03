@@ -1,6 +1,7 @@
 package com.ahuazhu.soy.forward;
 
 import com.ahuazhu.soy.modal.QueryKey;
+import com.ahuazhu.soy.modal.ResponseContext;
 import com.ahuazhu.soy.modal.ResponseWriter;
 import org.xbill.DNS.Message;
 
@@ -24,7 +25,7 @@ public class DefaultForwarder implements Forwarder {
 
     private static Forwarder forwarder;
 
-    private Map<QueryKey, ResponseWriter> cache;
+    private Map<QueryKey, ResponseContext> cache;
 
     public static Forwarder getInstance() {
         if (forwarder == null) {
@@ -79,11 +80,11 @@ public class DefaultForwarder implements Forwarder {
     }
 
     @Override
-    public void forward(Message message, ResponseWriter writer) throws IOException {
+    public void forward(Message message, ResponseContext response) throws IOException {
 
         if (forwarderStarted) {
 
-            cache.put(QueryKey.of(message), writer);
+            cache.put(QueryKey.of(message), response);
 
             for (InetSocketAddress upstreamServer : upstreamServers) {
                 datagramChannel.send(ByteBuffer.wrap(message.toWire()), upstreamServer);
@@ -130,10 +131,8 @@ public class DefaultForwarder implements Forwarder {
     }
 
     private void onMessage(Message message) throws IOException {
-        ResponseWriter writer = cache.get(QueryKey.of(message));
-        if (writer != null) {
-            writer.write(message.toWire());
-        }
+        ResponseContext response = cache.get(QueryKey.of(message));
+        response.response(message);
     }
 
     public void remove() {
