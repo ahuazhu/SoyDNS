@@ -2,7 +2,7 @@ package com.ahuazhu.soy.forward;
 
 import com.ahuazhu.soy.modal.QueryKey;
 import com.ahuazhu.soy.modal.ResponseContext;
-import com.ahuazhu.soy.modal.ResponseWriter;
+import com.ahuazhu.soy.processor.CacheManager;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
@@ -132,7 +132,9 @@ public class DefaultForwarder implements Forwarder {
 
     private void onMessage(Message message) throws IOException {
         ResponseContext response = cache.get(QueryKey.of(message));
-        response.response(message);
+        response.getWriter().write(message.toWire());
+        String key = message.getQuestion().getName().toString() + "_" + message.getQuestion().getType();
+        CacheManager.getCache().put(key, message);
     }
 
     public void remove() {
