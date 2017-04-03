@@ -1,4 +1,4 @@
-package com.ahuazhu.soy.forward;
+package com.ahuazhu.soy.modal;
 
 import org.xbill.DNS.Message;
 
@@ -8,6 +8,14 @@ import org.xbill.DNS.Message;
 public class QueryKey {
 
     private String key;
+
+    public QueryKey(String s) {
+        key = s;
+    }
+
+    public QueryKey() {
+
+    }
 
     public static QueryKey of(Message message) {
         QueryKey queryKey = new QueryKey();
