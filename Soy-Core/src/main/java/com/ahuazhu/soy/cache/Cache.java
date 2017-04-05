@@ -1,10 +1,12 @@
 package com.ahuazhu.soy.cache;
 
+import org.xbill.DNS.Message;
+
 /**
  * Created by zhengwenzhu on 2017/4/4.
  */
-public class Cache {
-    private org.ehcache.Cache cache;
+public interface Cache {
 
-//    public void put(QueryKey key, )
+    Message getMessage(Message question);
+
 }

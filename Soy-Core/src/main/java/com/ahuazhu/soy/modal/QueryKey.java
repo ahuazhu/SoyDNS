@@ -7,35 +7,38 @@ import org.xbill.DNS.Message;
  */
 public class QueryKey {
 
-    private String key;
 
-    public QueryKey(String s) {
-        key = s;
+    private int questionId;
+
+    private String name;
+
+    private int type;
+
+    public QueryKey(Message message) {
+        questionId = message.getHeader().getID();
+        name = message.getQuestion().getName().toString();
+        type = message.getQuestion().getType();
     }
 
-    public QueryKey() {
-
-    }
-
+    @Deprecated()
     public static QueryKey of(Message message) {
-        QueryKey queryKey = new QueryKey();
-        queryKey.key = message.getHeader().getID() + "_"
-                + message.getQuestion().getName().toString() + "_"
-                + message.getQuestion().getType();
-
-        return queryKey;
+        return new QueryKey(message);
     }
 
     @Override
     public int hashCode() {
-        return key == null ? 0 : key.hashCode();
+        return questionId << 7
+                + type
+                + (name == null ? 0 : name.toLowerCase().hashCode());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof QueryKey) {
             QueryKey o = (QueryKey) obj;
-            return key == null ? o.key == null : key.equals(o.key);
+            return questionId == o.questionId
+                    && type == o.type
+                    && (name == null ? o.name == null : name.equalsIgnoreCase(o.name));
         }
         return false;
     }

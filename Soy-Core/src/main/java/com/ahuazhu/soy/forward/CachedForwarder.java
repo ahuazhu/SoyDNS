@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * Created by zhengwenzhu on 2017/4/1.
  */
-public class DefaultForwarder implements Forwarder {
+public class CachedForwarder implements Forwarder {
     private int forwardPort = 7690;
 
     private DatagramChannel datagramChannel;
@@ -25,15 +25,15 @@ public class DefaultForwarder implements Forwarder {
 
     private static Forwarder forwarder;
 
-    private Map<QueryKey, ResponseContext> cache;
+    private Map<QueryKey, ResponseContext> callBack;
 
     public static Forwarder getInstance() {
         if (forwarder == null) {
-            synchronized (DefaultForwarder.class) {
+            synchronized (CachedForwarder.class) {
                 if (forwarder == null) {
-                    DefaultForwarder defaultForwarder = new DefaultForwarder();
-                    defaultForwarder.start();
-                    forwarder = defaultForwarder;
+                    CachedForwarder cachedForwarder = new CachedForwarder();
+                    cachedForwarder.start();
+                    forwarder = cachedForwarder;
                 }
             }
         }
@@ -41,11 +41,10 @@ public class DefaultForwarder implements Forwarder {
         return forwarder;
     }
 
-    private DefaultForwarder() {
+    private CachedForwarder() {
         upstreamServers = new ArrayList<>();
         upstreamServers.add(new InetSocketAddress("8.8.8.8", 53));
-
-        cache = new HashMap<>();
+        callBack = new HashMap<>();
     }
 
     private void start() {
@@ -81,11 +80,8 @@ public class DefaultForwarder implements Forwarder {
 
     @Override
     public void forward(Message message, ResponseContext response) throws IOException {
-
         if (forwarderStarted) {
-
-            cache.put(QueryKey.of(message), response);
-
+            callBack.put(QueryKey.of(message), response);
             for (InetSocketAddress upstreamServer : upstreamServers) {
                 datagramChannel.send(ByteBuffer.wrap(message.toWire()), upstreamServer);
             }
@@ -131,7 +127,7 @@ public class DefaultForwarder implements Forwarder {
     }
 
     private void onMessage(Message message) throws IOException {
-        ResponseContext response = cache.get(QueryKey.of(message));
+        ResponseContext response = callBack.get(QueryKey.of(message));
         response.getWriter().write(message.toWire());
         String key = message.getQuestion().getName().toString() + "_" + message.getQuestion().getType();
         CacheManager.getCache().put(key, message);

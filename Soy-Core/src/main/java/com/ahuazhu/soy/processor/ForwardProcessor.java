@@ -1,7 +1,7 @@
 package com.ahuazhu.soy.processor;
 
 import com.ahuazhu.soy.exception.SoyException;
-import com.ahuazhu.soy.forward.DefaultForwarder;
+import com.ahuazhu.soy.forward.CachedForwarder;
 import com.ahuazhu.soy.forward.Forwarder;
 import com.ahuazhu.soy.modal.RequestContext;
 import com.ahuazhu.soy.modal.ResponseContext;
@@ -17,7 +17,7 @@ public class ForwardProcessor implements Processor {
     public void process(RequestContext request, ResponseContext response, ProcessorChain chain) throws SoyException {
         if (response.getResult() == null) {
 
-            Forwarder forwarder = DefaultForwarder.getInstance();
+            Forwarder forwarder = CachedForwarder.getInstance();
             try {
                 Message message = request.getMessage();
                 forwarder.forward(message, response);
