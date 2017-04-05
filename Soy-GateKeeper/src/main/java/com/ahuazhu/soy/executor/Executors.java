@@ -53,7 +53,7 @@ public enum Executors implements Executor {
         RingBuffer<DisruptorQuery> ringBuffer = null;
 
         {
-            final int BUFFER_SIZE = 2 << 10 << 4; // 1024 * 16
+            final int BUFFER_SIZE = 1 << 10 << 4; // 1024 * 16
             final int THREAD_NUMBERS = 10;
             EventFactory<DisruptorQuery> eventFactory = DisruptorQuery::new;
             ringBuffer = RingBuffer.createSingleProducer(eventFactory, BUFFER_SIZE);

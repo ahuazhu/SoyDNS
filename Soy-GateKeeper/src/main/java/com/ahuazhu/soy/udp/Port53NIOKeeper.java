@@ -20,7 +20,7 @@ import java.util.Iterator;
 public class Port53NIOKeeper implements InitializingBean {
 
 
-    public static final int DNS_PORT = 5553;
+    public static final int DNS_PORT = 53;
 
     private static final int UDP_LEN = 512;
 

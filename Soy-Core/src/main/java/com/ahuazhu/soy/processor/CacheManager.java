@@ -29,7 +29,7 @@ public class CacheManager {
         org.ehcache.CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
                 .withCache("dns",
                         CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, Message.class,
-                                ResourcePoolsBuilder.heap(100))
+                                ResourcePoolsBuilder.heap(1000))
                                 .build())
                 .build(true);
         return cacheManager.getCache("dns", String.class, Message.class);
