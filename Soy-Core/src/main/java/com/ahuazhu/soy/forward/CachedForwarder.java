@@ -1,6 +1,9 @@
 package com.ahuazhu.soy.forward;
 
+import com.ahuazhu.soy.cache.Cache;
+import com.ahuazhu.soy.cache.MessageCache;
 import com.ahuazhu.soy.modal.QueryKey;
+import com.ahuazhu.soy.modal.QuestionKey;
 import com.ahuazhu.soy.modal.ResponseContext;
 import com.ahuazhu.soy.processor.CacheManager;
 import org.xbill.DNS.Message;
@@ -27,6 +30,8 @@ public class CachedForwarder implements Forwarder {
 
     private Map<QueryKey, ResponseContext> callBack;
 
+    private Cache<QuestionKey, Message> cache;
+
     public static Forwarder getInstance() {
         if (forwarder == null) {
             synchronized (CachedForwarder.class) {
@@ -45,6 +50,7 @@ public class CachedForwarder implements Forwarder {
         upstreamServers = new ArrayList<>();
         upstreamServers.add(new InetSocketAddress("8.8.8.8", 53));
         callBack = new HashMap<>();
+        cache = new MessageCache();
     }
 
     private void start() {
@@ -80,6 +86,9 @@ public class CachedForwarder implements Forwarder {
 
     @Override
     public void forward(Message message, ResponseContext response) throws IOException {
+
+        Message answer = cache.getValue(new QuestionKey(message));
+
         if (forwarderStarted) {
             callBack.put(QueryKey.of(message), response);
             for (InetSocketAddress upstreamServer : upstreamServers) {

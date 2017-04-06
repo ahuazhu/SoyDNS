@@ -8,7 +8,7 @@ import com.ahuazhu.soy.utils.Constants;
 public interface Configure {
 
     default String getExecutorModal() {
-        return Constants.EXECUTE_MODE_SYNC;
+        return Constants.RUNTIME.EXECUTE.MODE_SYNC;
     }
 
     default int getThreadPoolCoreSize() {

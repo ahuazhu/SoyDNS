@@ -1,12 +1,14 @@
 package com.ahuazhu.soy.cache;
 
-import org.xbill.DNS.Message;
-
 /**
  * Created by zhengwenzhu on 2017/4/4.
  */
-public interface Cache {
+public interface Cache<K, V> {
 
-    Message getMessage(Message question);
+    V getValue(K key);
+
+    void remove(K key);
+
+    void putValue(K key, V value);
 
 }

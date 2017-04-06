@@ -11,6 +11,8 @@ public class QuestionKey {
 
     private int type;
 
+    private int questionId;
+
     public QuestionKey(Message message) {
         if (message == null) {
             throw new IllegalArgumentException("message should not be null");
@@ -18,7 +20,11 @@ public class QuestionKey {
 
         this.name = message.getQuestion().getName().toString();
         this.type = message.getQuestion().getType();
+        this.questionId = message.getHeader().getID();
+    }
 
+    public int getQuestionId() {
+        return questionId;
     }
 
     @Override
