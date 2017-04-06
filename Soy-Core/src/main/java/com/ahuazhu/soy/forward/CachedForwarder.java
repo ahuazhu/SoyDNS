@@ -86,11 +86,9 @@ public class CachedForwarder implements Forwarder {
 
     @Override
     public void forward(Message message, ResponseContext response) throws IOException {
-
         Message answer = cache.getValue(new QuestionKey(message));
-
         if (answer != null) {
-            send(message, response);
+            send(answer, response);
             return;
         }
         if (forwarderStarted) {
