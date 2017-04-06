@@ -89,8 +89,12 @@ public class CachedForwarder implements Forwarder {
 
         Message answer = cache.getValue(new QuestionKey(message));
 
+        if (answer != null) {
+            send(message, response);
+            return;
+        }
         if (forwarderStarted) {
-            callBack.put(QueryKey.of(message), response);
+            callBack.put(new QueryKey(message), response);
             for (InetSocketAddress upstreamServer : upstreamServers) {
                 datagramChannel.send(ByteBuffer.wrap(message.toWire()), upstreamServer);
             }
@@ -136,10 +140,17 @@ public class CachedForwarder implements Forwarder {
     }
 
     private void onMessage(Message message) throws IOException {
-        ResponseContext response = callBack.get(QueryKey.of(message));
-        response.getWriter().write(message.toWire());
-        String key = message.getQuestion().getName().toString() + "_" + message.getQuestion().getType();
-        CacheManager.getCache().put(key, message);
+        ResponseContext response = callBack.get(new QueryKey(message));
+        send(message, response);
+        updateCache(new QuestionKey(message), message);
+    }
+
+    private void updateCache(QuestionKey queryKey, Message message) {
+        cache.putValue(queryKey, message);
+    }
+
+    private void send(Message message, ResponseContext responseContext) throws IOException {
+        responseContext.getWriter().write(message.toWire());
     }
 
     public void remove() {

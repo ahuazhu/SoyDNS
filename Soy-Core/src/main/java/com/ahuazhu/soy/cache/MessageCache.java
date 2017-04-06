@@ -35,8 +35,7 @@ public class MessageCache implements Cache<QuestionKey, Message> {
 
     @Override
     public Message getValue(QuestionKey key) {
-        Message message = ehcache.get(key);
-
+        Message message = (Message) ehcache.get(key).clone();
         message.getHeader().setID(key.getQuestionId());
         return message;
     }
