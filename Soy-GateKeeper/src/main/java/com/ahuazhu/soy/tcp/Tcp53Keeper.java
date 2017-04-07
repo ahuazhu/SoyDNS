@@ -20,7 +20,7 @@ import java.util.Iterator;
 @Component
 public class Tcp53Keeper implements InitializingBean {
     private Charset charset = Charset.forName("UTF-8");
-    public static final int DNS_PORT = 5553;
+    public static final int DNS_PORT = 53;
     private static final int UDP_LEN = 512;
     private Executor executor = Executors.Sync;
 
@@ -45,52 +45,6 @@ public class Tcp53Keeper implements InitializingBean {
         }
 
 
-//        while (true) {
-//            try {
-//                int n = selector.select();
-//                if (n > 0) {
-//                    Iterator iterator = selector.selectedKeys().iterator();
-//                    while (iterator.hasNext()) {
-//                        SelectionKey sk = (SelectionKey) iterator.next();
-//                        iterator.remove();
-//                        if (sk.isAcceptable()) {
-//                            SocketChannel sc = channel.accept();
-//                            sc.configureBlocking(false);
-//                            sc.register(selector, SelectionKey.OP_READ);
-//                            sk.interestOps(SelectionKey.OP_ACCEPT);
-//                        }
-//
-//                        if (sk.isReadable()) {
-//                            SocketChannel sc = (SocketChannel) sk.channel();
-//                            ByteBuffer buff = ByteBuffer.allocate(512);
-//
-//                            try {
-//                                int bytes = sc.read(buff);
-//                                if (bytes > 0) {
-//                                    byte[] data = new byte[bytes - 2];
-//                                    System.arraycopy(buff.array(), 2, data, 0, data.length);
-//                                    Query query = new SimpleQuery(data, new TcpNioResponseWriter(sc));
-//                                    executor.execute(query);
-//                                }
-//                            } catch (IOException e) {
-//                                sk.cancel();
-//                                if (sk.channel() != null) {
-//                                    sk.channel().close();
-//                                }
-//
-//                            }
-//                        }
-//                    }
-//                }
-//            } catch (ClosedSelectorException | ClosedChannelException e) {
-//                System.err.println("Channel closed");
-//                e.printStackTrace();
-//                break;
-//            } catch (IOException e) {
-//                System.err.println(e.getMessage());
-//                e.printStackTrace();
-//            }
-//        }
 
         try {
             while (selector.select() > 0) {
