@@ -11,13 +11,14 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
  * Created by zhengwenzhu on 2017/3/28.
  */
 @Component
-public class Port53NIOKeeper implements InitializingBean {
+public class Udp53Keeper implements InitializingBean {
 
 
     public static final int DNS_PORT = 5553;
@@ -54,8 +55,9 @@ public class Port53NIOKeeper implements InitializingBean {
                             byteBuffer.clear();
                             DatagramChannel datagramChannel = (DatagramChannel) key.channel();
                             InetSocketAddress address = (InetSocketAddress) datagramChannel.receive(byteBuffer);
-                            byteBuffer.flip();
-                            Query query = new SimpleQuery(byteBuffer, new UdpNioResponseWriter(datagramChannel, address));
+                            byte[] data = Arrays.copyOf(byteBuffer.array(), byteBuffer.position());
+                            byteBuffer.clear();
+                            Query query = new SimpleQuery(data, new UdpNioResponseWriter(datagramChannel, address));
                             executor.execute(query);
 
                         }
