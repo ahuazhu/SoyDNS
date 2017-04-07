@@ -1,11 +1,11 @@
 package com.ahuazhu.soy.forward;
 
 import com.ahuazhu.soy.cache.Cache;
+import com.ahuazhu.soy.cache.ForwardCallBackCache;
 import com.ahuazhu.soy.cache.MessageCache;
 import com.ahuazhu.soy.modal.QueryKey;
 import com.ahuazhu.soy.modal.QuestionKey;
 import com.ahuazhu.soy.modal.ResponseContext;
-import com.ahuazhu.soy.processor.CacheManager;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class CachedForwarder implements Forwarder {
 
     private static Forwarder forwarder;
 
-    private Map<QueryKey, ResponseContext> callBack;
+    private Cache<QueryKey, ForwardCallBack> callBackCache;
 
     private Cache<QuestionKey, Message> cache;
 
@@ -49,7 +49,7 @@ public class CachedForwarder implements Forwarder {
     private CachedForwarder() {
         upstreamServers = new ArrayList<>();
         upstreamServers.add(new InetSocketAddress("8.8.8.8", 53));
-        callBack = new HashMap<>();
+        callBackCache = new ForwardCallBackCache();
         cache = new MessageCache();
     }
 
@@ -92,7 +92,7 @@ public class CachedForwarder implements Forwarder {
             return;
         }
         if (forwarderStarted) {
-            callBack.put(new QueryKey(message), response);
+            callBackCache.putValue(new QueryKey(message), new SendResultForwardCallBack(response));
             for (InetSocketAddress upstreamServer : upstreamServers) {
                 datagramChannel.send(ByteBuffer.wrap(message.toWire()), upstreamServer);
             }
@@ -138,8 +138,12 @@ public class CachedForwarder implements Forwarder {
     }
 
     private void onMessage(Message message) throws IOException {
-        ResponseContext response = callBack.get(new QueryKey(message));
-        send(message, response);
+        QueryKey key = new QueryKey(message);
+        ForwardCallBack callBack = callBackCache.getValue(key);
+        if (callBack != null) {
+            callBack.onMessage(message);
+            callBackCache.remove(key);
+        }
         updateCache(new QuestionKey(message), message);
     }
 
