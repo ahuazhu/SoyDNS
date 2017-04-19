@@ -10,7 +10,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>Soy-DoorKeeper</artifactId>
+    <artifactId>Soy-GateKeeper</artifactId>
     <groupId>com.ahuazhu.soy</groupId>
     <version>1.0.0-SNAPSHOT</version>
 
