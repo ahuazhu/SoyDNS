@@ -20,8 +20,7 @@ import java.util.Iterator;
 @Component
 public class Tcp53Keeper implements InitializingBean {
     private Charset charset = Charset.forName("UTF-8");
-    public static final int DNS_PORT = 53;
-    private static final int UDP_LEN = 512;
+    public static final int DNS_PORT = 5553;
     private Executor executor = Executors.Sync;
 
 

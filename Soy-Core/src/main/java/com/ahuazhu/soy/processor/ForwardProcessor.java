@@ -3,6 +3,7 @@ package com.ahuazhu.soy.processor;
 import com.ahuazhu.soy.exception.SoyException;
 import com.ahuazhu.soy.forward.CachedForwarder;
 import com.ahuazhu.soy.forward.Forwarder;
+import com.ahuazhu.soy.forward.TcpForwarder;
 import com.ahuazhu.soy.modal.RequestContext;
 import com.ahuazhu.soy.modal.ResponseContext;
 import org.xbill.DNS.Message;
@@ -17,7 +18,8 @@ public class ForwardProcessor implements Processor {
     public void process(RequestContext request, ResponseContext response, ProcessorChain chain) throws SoyException {
         if (response.getResult() == null) {
 
-            Forwarder forwarder = CachedForwarder.getInstance();
+//            Forwarder forwarder = CachedForwarder.getInstance();
+            Forwarder forwarder = TcpForwarder.getInstance();
             try {
                 Message message = request.getMessage();
                 forwarder.forward(message, response);
