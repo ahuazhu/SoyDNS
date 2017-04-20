@@ -20,7 +20,7 @@ public class CachedForwarder implements Forwarder {
     private Forwarder udpForwarder;
 
 
-    CachedForwarder() {
+    public CachedForwarder() {
         cache = new MessageCache();
         tcpForwarder = new TcpForwarder();
         udpForwarder = new UdpForwarder();

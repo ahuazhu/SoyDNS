@@ -1,6 +1,7 @@
 package com.ahuazhu.soy.processor;
 
 import com.ahuazhu.soy.exception.SoyException;
+import com.ahuazhu.soy.forward.CachedForwarder;
 import com.ahuazhu.soy.forward.Forwarder;
 import com.ahuazhu.soy.forward.TcpForwarder;
 import com.ahuazhu.soy.modal.RequestContext;
@@ -18,7 +19,7 @@ public class ForwardProcessor implements Processor {
         if (response.getResult() == null) {
 
 //            Forwarder forwarder = UdpForwarder.getInstance();
-            Forwarder forwarder = TcpForwarder.getInstance();
+            Forwarder forwarder = new CachedForwarder();
             try {
                 Message message = request.getMessage();
                 forwarder.forward(message, response);
