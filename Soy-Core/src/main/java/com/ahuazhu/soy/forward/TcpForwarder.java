@@ -13,10 +13,8 @@ import java.util.Arrays;
 public class TcpForwarder implements Forwarder {
 
 
-    private ForwardCallBack forwardCallBack;
+    TcpForwarder() {
 
-    TcpForwarder(ForwardCallBack callBack) {
-        this.forwardCallBack = callBack;
     }
 
     @Override
