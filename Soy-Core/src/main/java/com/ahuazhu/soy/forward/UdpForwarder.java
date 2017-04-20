@@ -61,9 +61,6 @@ public class UdpForwarder implements Forwarder {
             Thread threadForReceive = new Thread(this::receive, "Forwarder-Receiver");
             threadForReceive.setDaemon(true);
             threadForReceive.start();
-            Thread threadForRemove = new Thread(this::remove, "Forwarder-Remover");
-            threadForRemove.setDaemon(true);
-            threadForRemove.start();
         } catch (IOException e) {
             System.err.println("Recursive resolution is disable because of " + e);
         }
@@ -126,9 +123,5 @@ public class UdpForwarder implements Forwarder {
         }
     }
 
-
-    public void remove() {
-
-    }
 
 }
