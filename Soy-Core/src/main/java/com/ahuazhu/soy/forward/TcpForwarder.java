@@ -1,14 +1,10 @@
 package com.ahuazhu.soy.forward;
 
-import com.ahuazhu.soy.cache.Cache;
-import com.ahuazhu.soy.cache.MessageCache;
-import com.ahuazhu.soy.modal.QuestionKey;
 import com.ahuazhu.soy.modal.ResponseContext;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
 /**
@@ -16,11 +12,7 @@ import java.util.Arrays;
  */
 public class TcpForwarder implements Forwarder {
 
-    private SocketChannel sc;
-
     private static Forwarder forwarder;
-
-    private Cache<QuestionKey, Message> cache;
 
     public static Forwarder getInstance() {
         if (forwarder == null) {
@@ -37,7 +29,7 @@ public class TcpForwarder implements Forwarder {
     }
 
     private TcpForwarder() {
-        cache = new MessageCache();
+
     }
 
     @Override
