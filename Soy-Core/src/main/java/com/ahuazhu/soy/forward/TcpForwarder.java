@@ -24,7 +24,7 @@ public class TcpForwarder implements Forwarder {
 
     public static Forwarder getInstance() {
         if (forwarder == null) {
-            synchronized (CachedForwarder.class) {
+            synchronized (UdpForwarder.class) {
                 if (forwarder == null) {
                     TcpForwarder cachedForwarder = new TcpForwarder();
                     cachedForwarder.start();
@@ -51,10 +51,10 @@ public class TcpForwarder implements Forwarder {
 
         byte[] readData = new byte[512];
         int bytesRcvd = clientSocket.getInputStream().read(readData);
-        byte[] awnser = Arrays.copyOfRange(readData, 2, bytesRcvd);
+        byte[] answer = Arrays.copyOfRange(readData, 2, bytesRcvd);
         clientSocket.close();
         if (bytesRcvd > 0) {
-            response.getWriter().write(awnser);
+            response.getWriter().write(answer);
         }
     }
 
