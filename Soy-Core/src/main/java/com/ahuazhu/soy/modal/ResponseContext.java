@@ -13,8 +13,6 @@ public class ResponseContext {
 
     private Message result;
 
-    private Cache<QueryKey, Message> cache;
-
     public ResponseContext(ResponseWriter writer) {
         this.writer = writer;
     }
@@ -45,14 +43,5 @@ public class ResponseContext {
 
     public void response(Message message) {
         result = message;
-        cache.put(QueryKey.of(message), message);
-    }
-
-    public Cache<QueryKey, Message> getCache() {
-        return cache;
-    }
-
-    public void setCache(Cache<QueryKey, Message> cache) {
-        this.cache = cache;
     }
 }

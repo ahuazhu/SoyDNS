@@ -22,8 +22,8 @@ public class CachedForwarder implements Forwarder {
 
     CachedForwarder() {
         cache = new MessageCache();
-        tcpForwarder = TcpForwarder.getInstance();
-        udpForwarder = UdpForwarder.getInstance();
+        tcpForwarder = new TcpForwarder();
+        udpForwarder = new UdpForwarder();
     }
 
     @Override
@@ -33,6 +33,7 @@ public class CachedForwarder implements Forwarder {
             send(answer, response);
             return;
         }
+
 
         udpForwarder.forward(message, response);
 

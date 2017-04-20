@@ -12,24 +12,11 @@ import java.util.Arrays;
  */
 public class TcpForwarder implements Forwarder {
 
-    private static Forwarder forwarder;
 
-    public static Forwarder getInstance() {
-        if (forwarder == null) {
-            synchronized (UdpForwarder.class) {
-                if (forwarder == null) {
-                    TcpForwarder cachedForwarder = new TcpForwarder();
-                    cachedForwarder.start();
-                    forwarder = cachedForwarder;
-                }
-            }
-        }
+    private ForwardCallBack forwardCallBack;
 
-        return forwarder;
-    }
-
-    private TcpForwarder() {
-
+    TcpForwarder(ForwardCallBack callBack) {
+        this.forwardCallBack = callBack;
     }
 
     @Override
@@ -47,16 +34,6 @@ public class TcpForwarder implements Forwarder {
         clientSocket.close();
         if (bytesRcvd > 0) {
             response.getWriter().write(answer);
-        }
-    }
-
-
-    private void start() {
-        try {
-            throw new IOException();
-
-        } catch (IOException e) {
-            //
         }
     }
 }

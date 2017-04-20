@@ -31,24 +31,11 @@ public class UdpForwarder implements Forwarder {
 
     private Cache<QueryKey, ForwardCallBack> callBackCache;
 
-    public static Forwarder getInstance() {
-        if (forwarder == null) {
-            synchronized (UdpForwarder.class) {
-                if (forwarder == null) {
-                    UdpForwarder udpForwarder = new UdpForwarder();
-                    udpForwarder.start();
-                    forwarder = udpForwarder;
-                }
-            }
-        }
-
-        return forwarder;
-    }
-
-    private UdpForwarder() {
+    UdpForwarder() {
         upstreamServers = new ArrayList<>();
         upstreamServers.add(new InetSocketAddress("8.8.8.8", 53));
         callBackCache = new ForwardCallBackCache();
+        start();
     }
 
     private void start() {
