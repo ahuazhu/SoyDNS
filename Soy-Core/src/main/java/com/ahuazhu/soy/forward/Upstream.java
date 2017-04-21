@@ -17,7 +17,7 @@ public interface Upstream {
 
     boolean isFake();
 
-    String descript();
+    String description();
 
     boolean establish();
 

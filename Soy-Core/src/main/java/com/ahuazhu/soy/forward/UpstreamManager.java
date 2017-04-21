@@ -1,6 +1,6 @@
 package com.ahuazhu.soy.forward;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by zhuzhengwen on 2017/4/21.
@@ -9,9 +9,9 @@ public interface UpstreamManager {
 
     void init();
 
-    List<TcpUpstream> getTcpUpstream();
+    Collection<TcpUpstream> getTcpUpstream();
 
-    List<UdpUpstream> getUdpUpstream();
+    Collection<UdpUpstream> getUdpUpstream();
 
     void patrol();
 
