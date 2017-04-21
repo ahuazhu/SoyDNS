@@ -1,6 +1,7 @@
 package com.ahuazhu.soy.forward;
 
 import com.ahuazhu.soy.config.Configure;
+import com.ahuazhu.soy.utils.Threads;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -24,9 +25,7 @@ public class DefaultUpstreamManager implements UpstreamManager {
 
     @Override
     public void init() {
-        Thread threadForReceive = new Thread(this::patrol, "Upstream-Patrol");
-        threadForReceive.setDaemon(true);
-        threadForReceive.start();
+        Threads.name("UPSTREAM-PATROL").daemon(this::patrol).start();
     }
 
     @Override
