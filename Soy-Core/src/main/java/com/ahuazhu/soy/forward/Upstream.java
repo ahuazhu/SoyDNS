@@ -22,4 +22,8 @@ public interface Upstream {
     boolean establish();
 
     boolean destroy();
+
+    boolean reconnect();
+
+    boolean lost();
 }
