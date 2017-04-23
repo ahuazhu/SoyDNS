@@ -5,6 +5,15 @@ package com.ahuazhu.soy.utils;
  */
 public class Threads {
 
+    public static void sleep(long millis) {
+
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            //ignore
+        }
+    }
+
     public static ThreadBuilder name(String name) {
         ThreadBuilder builder = new ThreadBuilder();
         builder.setName(name);

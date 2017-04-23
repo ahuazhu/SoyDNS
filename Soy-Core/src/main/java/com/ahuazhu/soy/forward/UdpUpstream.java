@@ -23,10 +23,12 @@ public class UdpUpstream implements Upstream {
 
     private InetSocketAddress socketAddress;
 
-    public UdpUpstream(String host, int port) {
+    private AnswerHandler handler;
+
+    public UdpUpstream(String host, int port, AnswerHandler answerHandler) {
         this.host = host;
         this.port = port;
-
+        this.handler = answerHandler;
         socketAddress = new InetSocketAddress(host, port);
     }
 
@@ -39,11 +41,6 @@ public class UdpUpstream implements Upstream {
         } catch (IOException e) {
             //
         }
-    }
-
-    @Override
-    public void onAnswer(Message answer) {
-
     }
 
     @Override
@@ -137,7 +134,7 @@ public class UdpUpstream implements Upstream {
                                 byteBuffer.flip();
                                 byte[] data = byteBuffer.array();
                                 byte[] copy = Arrays.copyOf(data, data.length);
-                                onAnswer(new Message(copy));
+                                handler.onAnswer(new Message(copy));
                             }
                         }
                     }

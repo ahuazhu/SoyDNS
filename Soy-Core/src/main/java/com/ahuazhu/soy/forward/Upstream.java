@@ -9,8 +9,6 @@ public interface Upstream {
 
     void ask(Message question);
 
-    void onAnswer(Message answer);
-
     boolean isUdp();
 
     boolean isTcp();

@@ -1,9 +1,14 @@
 package com.ahuazhu.soy.forward;
 
+import com.ahuazhu.soy.utils.Schedule;
+import com.ahuazhu.soy.utils.Threads;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
 /**
@@ -16,47 +21,37 @@ public class TcpUpstream implements Upstream {
 
     private int port;
 
-    private int weight;
-
     private boolean lost = false;
 
-    private Socket socket;
+    SocketChannel channel = null;
 
-    public TcpUpstream(String host, int port, int weight) {
+    private AnswerHandler handler;
+
+    public TcpUpstream(String host, int port, AnswerHandler answerHandler) {
         this.host = host;
         this.port = port;
-        this.weight = weight;
+        this.handler = answerHandler;
     }
 
     @Override
     public void ask(Message question) {
         try {
-            byte[] data = question.toWire();
-            socket.getOutputStream().write(new byte[]{0, 31});
-            socket.getOutputStream().write(data);
-            socket.getOutputStream().flush();
-            byte[] readData = new byte[512];
-            int bytesReceived = socket.getInputStream().read(readData);
-            byte[] answer = Arrays.copyOfRange(readData, 2, bytesReceived);
-            socket.close();
-            if (bytesReceived > 0) {
-                onAnswer(new Message(answer));
+            ByteBuffer bytesSend = ByteBuffer.allocate(1024);
+            byte[] questionData = question.toWire();
+            byte[] head = new byte[]{0, 32};
+            bytesSend.put(head).put(questionData);
+            channel.write(bytesSend);
+
+            ByteBuffer bytesRead = ByteBuffer.allocate(1024);
+            if (channel.read(bytesRead) > 0) {
+                byte[] data = bytesRead.array();
+                byte[] answer = Arrays.copyOfRange(data, 2, data.length);
+                handler.onAnswer(new Message(answer));
             }
-        } catch (IOException e) {
-            //
-        }
-    }
 
-    @Override
-    public void onAnswer(Message answer) {
-        try {
-            socket.getOutputStream().write(answer.toWire());
-            socket.getOutputStream().flush();
         } catch (IOException e) {
-            //
-            lost = true;
+            e.printStackTrace();
         }
-
     }
 
     @Override
@@ -83,17 +78,40 @@ public class TcpUpstream implements Upstream {
     public boolean establish() {
 
         try {
-            socket = new Socket(host, port);
-            return true;
+            SocketChannel channel = SocketChannel.open();
+            channel.configureBlocking(false);
+            SocketAddress server = new InetSocketAddress(host, port);
+            if (!channel.connect(server)) {
+                waitConnected(channel);
+            }
+
+            if (channel.finishConnect()) {
+                System.out.println("Connected " + toString());
+            } else {
+                System.out.println("Disconnected " + toString());
+            }
         } catch (IOException e) {
-            return false;
+            //
         }
+
+        return true;
+    }
+
+    private void waitConnected(SocketChannel channel) {
+        Schedule.retry(o -> {
+            Threads.sleep(10);
+            try {
+                return channel.finishConnect();
+            } catch (IOException e) {
+                return false;
+            }
+        }, 20);
     }
 
     @Override
     public boolean destroy() {
         try {
-            socket.close();
+            channel.close();
             return true;
         } catch (IOException e) {
             return false;
