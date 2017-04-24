@@ -19,7 +19,7 @@ public class CachedForwarder implements Forwarder {
 
     public CachedForwarder() {
         cache = new MessageCache();
-        upstream = new UdpUpstream("8.8.8.8", 53);
+        upstream = new TcpUpstream("8.8.8.8", 53);
         upstream.establish();
     }
 

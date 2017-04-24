@@ -32,7 +32,7 @@ public class TcpUpstream implements Upstream {
     @Override
     public void ask(Message question, AnswerHandler answerHandler) {
         try {
-
+            clientSocket = new Socket("114.114.114.114", 53);
             byte[] data = question.toWire();
             clientSocket.getOutputStream().write(new byte[]{0, 31});
             clientSocket.getOutputStream().write(data);
@@ -40,11 +40,12 @@ public class TcpUpstream implements Upstream {
 
             byte[] readData = new byte[512];
             int bytesRcvd = clientSocket.getInputStream().read(readData);
-            byte[] answer = Arrays.copyOfRange(readData, 2, bytesRcvd);
             if (bytesRcvd > 0) {
+                byte[] answer = Arrays.copyOfRange(readData, 2, bytesRcvd);
                 answerHandler.onAnswer(new Message(answer));
             }
 
+            clientSocket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,8 +76,8 @@ public class TcpUpstream implements Upstream {
     public boolean establish() {
 
         try {
-            clientSocket = new Socket();
-            clientSocket.connect(new InetSocketAddress(host, port), 1000);
+            clientSocket = new Socket("114.114.114.114", 53);
+//            clientSocket.connect(new InetSocketAddress(host, port), 1000);
         } catch (IOException e) {
             e.printStackTrace();
         }
