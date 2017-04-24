@@ -15,7 +15,7 @@ public class CachedForwarder implements Forwarder {
 
     private Cache<QuestionKey, Message> cache;
 
-    Upstream upstream ;
+    private Upstream upstream ;
 
     public CachedForwarder() {
         cache = new MessageCache();
@@ -30,7 +30,9 @@ public class CachedForwarder implements Forwarder {
             send(answer, response);
             return;
         }
-        upstream.ask(message, new WriteHandler(response.getWriter()));
+        WriteHandler answerHandler = new WriteHandler(response.getWriter());
+        answerHandler.setQuestionCache(cache);
+        upstream.ask(message, answerHandler);
     }
 
     private void send(Message message, ResponseContext responseContext) throws IOException {
