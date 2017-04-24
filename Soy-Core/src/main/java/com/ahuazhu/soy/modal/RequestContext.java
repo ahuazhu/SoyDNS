@@ -1,7 +1,6 @@
 package com.ahuazhu.soy.modal;
 
 import com.ahuazhu.soy.exception.SoyException;
-import org.ehcache.Cache;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
@@ -17,8 +16,15 @@ public class RequestContext {
 
     private final Message message;
 
+    private long startMillis;
+
+    private long timeoutMillis;
+
     public RequestContext(ByteBuffer data) {
         this.queryData = data;
+        this.startMillis = System.currentTimeMillis();
+        this.timeoutMillis = 5000L;
+
         try {
             message = new Message(data);
         } catch (IOException e) {
@@ -32,6 +38,10 @@ public class RequestContext {
 
     public Message getMessage() {
         return message;
+    }
+
+    public boolean hasTimeout() {
+        return System.currentTimeMillis() >= startMillis + timeoutMillis;
     }
 
 }

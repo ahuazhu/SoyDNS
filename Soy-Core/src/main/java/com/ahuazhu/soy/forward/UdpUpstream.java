@@ -41,6 +41,8 @@ public class UdpUpstream implements Upstream {
     public void ask(Message question, AnswerHandler answerHandler) {
 
         try {
+            System.out.println("SendUpstream " + question.getQuestion().getName() + " " + System.currentTimeMillis());
+
             datagramChannel.send(ByteBuffer.wrap(question.toWire()), socketAddress);
             QueryKey key = new QueryKey(question);
             callBackCache.putValue(key, answerHandler);
@@ -153,6 +155,7 @@ public class UdpUpstream implements Upstream {
                                 byte[] copy = Arrays.copyOf(data, data.length);
 
                                 Message message = new Message(copy);
+                                System.out.println("ReceivedAnswer " + message.getQuestion().getName() + " " + System.currentTimeMillis());
                                 AnswerHandler answerHandler = callBackCache.takeValue(new QueryKey(message));
                                 if (answerHandler != null) {
                                     answerHandler.onAnswer(message);

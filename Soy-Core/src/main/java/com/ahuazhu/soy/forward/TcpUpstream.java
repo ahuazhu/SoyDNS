@@ -32,6 +32,7 @@ public class TcpUpstream implements Upstream {
     @Override
     public void ask(Message question, AnswerHandler answerHandler) {
         try {
+            System.out.println("SendUpstream " + question.getQuestion().getName() + " " + System.currentTimeMillis());
             clientSocket = new Socket("114.114.114.114", 53);
             byte[] data = question.toWire();
             clientSocket.getOutputStream().write(new byte[]{0, 31});
@@ -42,7 +43,9 @@ public class TcpUpstream implements Upstream {
             int bytesRcvd = clientSocket.getInputStream().read(readData);
             if (bytesRcvd > 0) {
                 byte[] answer = Arrays.copyOfRange(readData, 2, bytesRcvd);
-                answerHandler.onAnswer(new Message(answer));
+                Message message = new Message(answer);
+                System.out.println("ReceivedAnswer " + message.getQuestion().getName() + " " + System.currentTimeMillis());
+                answerHandler.onAnswer(message);
             }
 
             clientSocket.close();

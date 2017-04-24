@@ -37,7 +37,7 @@ public class SimpleProcessorChain implements ProcessorChain {
             iterator = processorList.iterator();
         }
 
-        if (iterator.hasNext()) {
+        if (iterator.hasNext() && !request.hasTimeout()) {
             iterator.next().process(request, response, this);
         }
     }

@@ -12,9 +12,16 @@ import com.ahuazhu.soy.processor.SimpleProcessorChain;
 public class Soy {
 
     public static void fire(Query query) throws SoyException {
+        RequestContext request = new RequestContext(query.getQueryData());
+        ResponseContext response = new ResponseContext(query.getResponseWriter());
+
+        System.out.println("Submit " + request.getMessage().getQuestion().getName() + " " + System.currentTimeMillis());
+
         SimpleProcessorChain.create()
-                .process(new RequestContext(query.getQueryData()),
-                new ResponseContext(query.getResponseWriter()));
+                .process(request,
+                        response);
+
+
 
     }
 }

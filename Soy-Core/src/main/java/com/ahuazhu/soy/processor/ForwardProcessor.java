@@ -22,7 +22,8 @@ public class ForwardProcessor implements Processor {
 
             try {
                 Message message = request.getMessage();
-                forwarder.forward(message, response);
+//                forwarder.forward(message, response);
+                forwarder.forward(message, request, response, chain);
             } catch (IOException e) {
                 response.setError(e);
             }

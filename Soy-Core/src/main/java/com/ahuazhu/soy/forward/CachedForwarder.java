@@ -21,7 +21,7 @@ public class CachedForwarder implements Forwarder {
 
     public CachedForwarder() {
         cache = new MessageCache();
-        upstream = new UdpUpstream("114.114.114.114", 53);
+        upstream = new TcpUpstream("114.114.114.114", 53);
         upstream.establish();
     }
 
@@ -38,8 +38,15 @@ public class CachedForwarder implements Forwarder {
     }
 
     @Override
-    public void forward(RequestContext request, ResponseContext response, ProcessorChain chain) throws IOException {
-
+    public void forward(Message message, RequestContext request, ResponseContext response, ProcessorChain chain) throws IOException {
+        Message answer = cache.getValue(new QuestionKey(message));
+        if (answer != null) {
+            send(answer, response);
+            return;
+        }
+        DefaultAnswerHandler answerHandler = new DefaultAnswerHandler(request, response, chain);
+        answerHandler.setQuestionCache(cache);
+        upstream.ask(message, answerHandler);
     }
 
     private void send(Message message, ResponseContext responseContext) throws IOException {
