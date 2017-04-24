@@ -11,4 +11,12 @@ public interface Cache<K, V> {
 
     void putValue(K key, V value);
 
+    default V takeValue(K key)  {
+        V v = getValue(key);
+        if (v != null) {
+            remove(key);
+        }
+        return v;
+    }
+
 }

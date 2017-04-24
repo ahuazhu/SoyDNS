@@ -153,7 +153,7 @@ public class UdpUpstream implements Upstream {
                                 byte[] copy = Arrays.copyOf(data, data.length);
 
                                 Message message = new Message(copy);
-                                AnswerHandler answerHandler = callBackCache.getValue(new QueryKey(message));
+                                AnswerHandler answerHandler = callBackCache.takeValue(new QueryKey(message));
                                 if (answerHandler != null) {
                                     answerHandler.onAnswer(message);
                                 }

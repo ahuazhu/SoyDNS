@@ -9,6 +9,7 @@ import com.ahuazhu.soy.modal.ResponseWriter;
  * Created by zhengwenzhu on 2017/4/3.
  */
 public class SendProcessor implements Processor {
+
     @Override
     public void process(RequestContext request, ResponseContext response, ProcessorChain chain) throws SoyException {
         if (response.getResult() != null) {
