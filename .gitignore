@@ -20,3 +20,6 @@ target/
 # OS
 .DS_Store
 *.swp
+
+# data
+*.data

@@ -20,7 +20,6 @@ public class ForwardProcessor implements Processor {
     public void process(RequestContext request, ResponseContext response, ProcessorChain chain) throws SoyException {
         if (response.getResult() == null) {
 
-//            Forwarder forwarder = UdpForwarder.getInstance();
             try {
                 Message message = request.getMessage();
                 forwarder.forward(message, response);
