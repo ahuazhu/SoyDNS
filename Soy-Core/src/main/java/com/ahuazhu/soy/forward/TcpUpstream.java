@@ -1,13 +1,10 @@
 package com.ahuazhu.soy.forward;
 
-import com.ahuazhu.soy.utils.Schedule;
-import com.ahuazhu.soy.utils.Threads;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
+import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
@@ -25,29 +22,29 @@ public class TcpUpstream implements Upstream {
 
     SocketChannel channel = null;
 
-    private AnswerHandler handler;
+    Socket clientSocket;
 
-    public TcpUpstream(String host, int port, AnswerHandler answerHandler) {
+    public TcpUpstream(String host, int port) {
         this.host = host;
         this.port = port;
-        this.handler = answerHandler;
     }
 
     @Override
-    public void ask(Message question) {
+    public void ask(Message question, AnswerHandler answerHandler) {
         try {
-            ByteBuffer bytesSend = ByteBuffer.allocate(1024);
-            byte[] questionData = question.toWire();
-            byte[] head = new byte[]{0, 32};
-            bytesSend.put(head).put(questionData);
-            channel.write(bytesSend);
 
-            ByteBuffer bytesRead = ByteBuffer.allocate(1024);
-            if (channel.read(bytesRead) > 0) {
-                byte[] data = bytesRead.array();
-                byte[] answer = Arrays.copyOfRange(data, 2, data.length);
-                handler.onAnswer(new Message(answer));
+            byte[] data = question.toWire();
+            clientSocket.getOutputStream().write(new byte[]{0, 31});
+            clientSocket.getOutputStream().write(data);
+            clientSocket.getOutputStream().flush();
+
+            byte[] readData = new byte[512];
+            int bytesRcvd = clientSocket.getInputStream().read(readData);
+            byte[] answer = Arrays.copyOfRange(readData, 2, bytesRcvd);
+            if (bytesRcvd > 0) {
+                answerHandler.onAnswer(new Message(answer));
             }
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,40 +75,51 @@ public class TcpUpstream implements Upstream {
     public boolean establish() {
 
         try {
-            SocketChannel channel = SocketChannel.open();
-            channel.configureBlocking(false);
-            SocketAddress server = new InetSocketAddress(host, port);
-            if (!channel.connect(server)) {
-                waitConnected(channel);
-            }
-
-            if (channel.finishConnect()) {
-                System.out.println("Connected " + toString());
-            } else {
-                System.out.println("Disconnected " + toString());
-            }
+            clientSocket = new Socket();
+            clientSocket.connect(new InetSocketAddress(host, port), 1000);
         } catch (IOException e) {
-            //
+            e.printStackTrace();
         }
+
+//        try {
+//            channel = SocketChannel.open();
+//            channel.configureBlocking(false);
+//            SocketAddress server = new InetSocketAddress(host, port);
+//            if (!channel.connect(server)) {
+//                waitConnected(channel);
+//            }
+//
+//            if (channel.finishConnect()) {
+//                System.out.println("Connected " + toString());
+//            } else {
+//                System.out.println("Disconnected " + toString());
+//            }
+//        } catch (IOException e) {
+//            //
+//            e.printStackTrace();
+//        }
 
         return true;
     }
 
-    private void waitConnected(SocketChannel channel) {
-        Schedule.retry(o -> {
-            Threads.sleep(10);
-            try {
-                return channel.finishConnect();
-            } catch (IOException e) {
-                return false;
-            }
-        }, 20);
-    }
+//    private void waitConnected(SocketChannel channel) {
+//        Schedule.retry(o -> {
+//            Threads.sleep(10);
+//            try {
+//                return channel.finishConnect();
+//            } catch (IOException e) {
+//                return false;
+//            }
+//        }, 20);
+//    }
 
     @Override
     public boolean destroy() {
         try {
             channel.close();
+            if (clientSocket != null && clientSocket.isConnected()) {
+                clientSocket.close();
+            }
             return true;
         } catch (IOException e) {
             return false;

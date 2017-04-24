@@ -15,15 +15,12 @@ public class CachedForwarder implements Forwarder {
 
     private Cache<QuestionKey, Message> cache;
 
-    private Forwarder tcpForwarder;
-
-    private Forwarder udpForwarder;
-
+    TcpUpstream tcpUpstream ;
 
     public CachedForwarder() {
         cache = new MessageCache();
-        tcpForwarder = new TcpForwarder();
-        udpForwarder = new UdpForwarder();
+        tcpUpstream = new TcpUpstream("8.8.8.8", 53);
+        tcpUpstream.establish();
     }
 
     @Override
@@ -33,10 +30,7 @@ public class CachedForwarder implements Forwarder {
             send(answer, response);
             return;
         }
-
-
-        udpForwarder.forward(message, response);
-
+        tcpUpstream.ask(message, new WriteHandler(response.getWriter()));
     }
 
     private void send(Message message, ResponseContext responseContext) throws IOException {

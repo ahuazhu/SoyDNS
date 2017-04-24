@@ -7,7 +7,7 @@ import org.xbill.DNS.Message;
  */
 public interface Upstream {
 
-    void ask(Message question);
+    void ask(Message question, AnswerHandler answerHandler);
 
     boolean isUdp();
 
