@@ -13,9 +13,11 @@ import java.util.List;
  */
 public class SimpleProcessorChain implements ProcessorChain {
 
+    private static ForwardProcessor forwardProcessor = new ForwardProcessor();
+
     public static SimpleProcessorChain create() {
         SimpleProcessorChain chain = new SimpleProcessorChain();
-        chain.addProcessor(new ForwardProcessor());
+        chain.addProcessor(forwardProcessor);
         return chain;
     }
 

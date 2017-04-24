@@ -14,12 +14,14 @@ import java.io.IOException;
  * Created by zhengwenzhu on 2017/4/1.
  */
 public class ForwardProcessor implements Processor {
+
+    Forwarder forwarder = new CachedForwarder();
+
     @Override
     public void process(RequestContext request, ResponseContext response, ProcessorChain chain) throws SoyException {
         if (response.getResult() == null) {
 
 //            Forwarder forwarder = UdpForwarder.getInstance();
-            Forwarder forwarder = new CachedForwarder();
             try {
                 Message message = request.getMessage();
                 forwarder.forward(message, response);

@@ -81,37 +81,8 @@ public class TcpUpstream implements Upstream {
             e.printStackTrace();
         }
 
-//        try {
-//            channel = SocketChannel.open();
-//            channel.configureBlocking(false);
-//            SocketAddress server = new InetSocketAddress(host, port);
-//            if (!channel.connect(server)) {
-//                waitConnected(channel);
-//            }
-//
-//            if (channel.finishConnect()) {
-//                System.out.println("Connected " + toString());
-//            } else {
-//                System.out.println("Disconnected " + toString());
-//            }
-//        } catch (IOException e) {
-//            //
-//            e.printStackTrace();
-//        }
-
         return true;
     }
-
-//    private void waitConnected(SocketChannel channel) {
-//        Schedule.retry(o -> {
-//            Threads.sleep(10);
-//            try {
-//                return channel.finishConnect();
-//            } catch (IOException e) {
-//                return false;
-//            }
-//        }, 20);
-//    }
 
     @Override
     public boolean destroy() {
