@@ -15,7 +15,7 @@ public class Soy {
         RequestContext request = new RequestContext(query.getQueryData());
         ResponseContext response = new ResponseContext(query.getResponseWriter());
 
-        System.out.println("Submit " + request.getMessage().getQuestion().getName() + " " + System.currentTimeMillis());
+//        System.out.println("Submit " + request.getMessage().getQuestion().getName() + " " + System.currentTimeMillis());
 
         SimpleProcessorChain.create()
                 .process(request,

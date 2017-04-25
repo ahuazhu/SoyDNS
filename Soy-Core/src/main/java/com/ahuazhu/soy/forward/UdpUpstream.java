@@ -34,14 +34,17 @@ public class UdpUpstream implements Upstream {
         this.host = host;
         this.port = port;
         socketAddress = new InetSocketAddress(host, port);
-        callBackCache = new UdpCallBackCache();
+    }
+
+    public void setCallBackCache(UdpCallBackCache cache) {
+        this.callBackCache = cache;
     }
 
     @Override
     public void ask(Message question, AnswerHandler answerHandler) {
 
         try {
-            System.out.println("SendUpstream " + question.getQuestion().getName() + " " + System.currentTimeMillis());
+//            System.out.println("SendUpstream " + question.getQuestion().getName() + " " + System.currentTimeMillis());
 
             datagramChannel.send(ByteBuffer.wrap(question.toWire()), socketAddress);
             QueryKey key = new QueryKey(question);
@@ -155,7 +158,7 @@ public class UdpUpstream implements Upstream {
                                 byte[] copy = Arrays.copyOf(data, data.length);
 
                                 Message message = new Message(copy);
-                                System.out.println("ReceivedAnswer " + message.getQuestion().getName() + " " + System.currentTimeMillis());
+//                                System.out.println("ReceivedAnswer " + message.getQuestion().getName() + " " + System.currentTimeMillis());
                                 AnswerHandler answerHandler = callBackCache.takeValue(new QueryKey(message));
                                 if (answerHandler != null) {
                                     answerHandler.onAnswer(message);

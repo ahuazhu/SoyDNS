@@ -24,7 +24,7 @@ public class UdpCallBackCache implements Cache<QueryKey, AnswerHandler> {
         CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
                 .withCache("UdpCallBackCache",
                         CacheConfigurationBuilder.newCacheConfigurationBuilder(QueryKey.class, AnswerHandler.class,
-                                ResourcePoolsBuilder.heap(10000))
+                                ResourcePoolsBuilder.heap(1000000))
                                 .withExpiry(Expirations.timeToLiveExpiration(
                                                 Duration.of(Constants.SYSTEM.CACHE.EXPIRE_MILLIS, TimeUnit.MILLISECONDS)
                                         )
@@ -49,4 +49,11 @@ public class UdpCallBackCache implements Cache<QueryKey, AnswerHandler> {
         ehcache.put(key, value);
     }
 
+    public synchronized AnswerHandler takeValue(QueryKey key)  {
+        AnswerHandler v = getValue(key);
+        if (v != null) {
+            remove(key);
+        }
+        return v;
+    }
 }

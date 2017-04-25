@@ -47,4 +47,12 @@ public class ForwardCallBackCache implements Cache<QueryKey, ForwardCallBack> {
     public void putValue(QueryKey key, ForwardCallBack value) {
         ehcache.put(key, value);
     }
+
+    public synchronized ForwardCallBack takeValue(QueryKey key)  {
+        ForwardCallBack v = getValue(key);
+        if (v != null) {
+            remove(key);
+        }
+        return v;
+    }
 }

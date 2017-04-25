@@ -16,7 +16,7 @@ public class Constants {
     public static final class SYSTEM {
         public static final class CACHE {
             public static final long ENTITIES = 1000 * 100;
-            public static final long EXPIRE_MILLIS = 1000 * 60 * 10;  // 1min
+            public static final long EXPIRE_MILLIS = 1000 * 60 * 10;  // 10min
         }
     }
 
