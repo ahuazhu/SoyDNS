@@ -2,8 +2,8 @@ package com.ahuazhu.soy.tcp;
 
 import com.ahuazhu.soy.executor.Executor;
 import com.ahuazhu.soy.executor.Executors;
-import com.ahuazhu.soy.modal.Query;
-import com.ahuazhu.soy.modal.SimpleQuery;
+import com.ahuazhu.soy.model.Query;
+import com.ahuazhu.soy.model.SimpleQuery;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 

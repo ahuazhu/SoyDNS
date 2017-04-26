@@ -1,4 +1,4 @@
-package com.ahuazhu.soy.modal;
+package com.ahuazhu.soy.model;
 
 import org.xbill.DNS.Message;
 

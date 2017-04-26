@@ -6,7 +6,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 import com.ahuazhu.soy.Soy;
-import com.ahuazhu.soy.modal.Query;
+import com.ahuazhu.soy.model.Query;
 import com.lmax.disruptor.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

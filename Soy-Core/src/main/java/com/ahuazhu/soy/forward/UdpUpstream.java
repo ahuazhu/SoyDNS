@@ -2,7 +2,7 @@ package com.ahuazhu.soy.forward;
 
 import com.ahuazhu.soy.cache.Cache;
 import com.ahuazhu.soy.cache.UdpCallBackCache;
-import com.ahuazhu.soy.modal.QueryKey;
+import com.ahuazhu.soy.model.QueryKey;
 import com.ahuazhu.soy.utils.Threads;
 import org.xbill.DNS.Message;
 

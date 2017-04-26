@@ -1,9 +1,9 @@
 package com.ahuazhu.soy.forward;
 
 import com.ahuazhu.soy.cache.Cache;
-import com.ahuazhu.soy.modal.QuestionKey;
-import com.ahuazhu.soy.modal.RequestContext;
-import com.ahuazhu.soy.modal.ResponseContext;
+import com.ahuazhu.soy.model.QuestionKey;
+import com.ahuazhu.soy.model.RequestContext;
+import com.ahuazhu.soy.model.ResponseContext;
 import com.ahuazhu.soy.processor.ProcessorChain;
 import org.xbill.DNS.Message;
 

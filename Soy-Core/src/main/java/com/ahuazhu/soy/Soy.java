@@ -1,9 +1,9 @@
 package com.ahuazhu.soy;
 
 import com.ahuazhu.soy.exception.SoyException;
-import com.ahuazhu.soy.modal.Query;
-import com.ahuazhu.soy.modal.RequestContext;
-import com.ahuazhu.soy.modal.ResponseContext;
+import com.ahuazhu.soy.model.Query;
+import com.ahuazhu.soy.model.RequestContext;
+import com.ahuazhu.soy.model.ResponseContext;
 import com.ahuazhu.soy.processor.SimpleProcessorChain;
 
 /**

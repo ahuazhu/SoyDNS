@@ -1,6 +1,6 @@
 package com.ahuazhu.soy.tcp;
 
-import com.ahuazhu.soy.modal.ResponseWriter;
+import com.ahuazhu.soy.model.ResponseWriter;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

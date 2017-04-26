@@ -1,6 +1,6 @@
 package com.ahuazhu.soy.udp;
 
-import com.ahuazhu.soy.modal.ResponseWriter;
+import com.ahuazhu.soy.model.ResponseWriter;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

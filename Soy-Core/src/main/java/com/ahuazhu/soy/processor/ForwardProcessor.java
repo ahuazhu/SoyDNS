@@ -3,8 +3,8 @@ package com.ahuazhu.soy.processor;
 import com.ahuazhu.soy.exception.SoyException;
 import com.ahuazhu.soy.forward.CachedForwarder;
 import com.ahuazhu.soy.forward.Forwarder;
-import com.ahuazhu.soy.modal.RequestContext;
-import com.ahuazhu.soy.modal.ResponseContext;
+import com.ahuazhu.soy.model.RequestContext;
+import com.ahuazhu.soy.model.ResponseContext;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;

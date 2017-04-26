@@ -1,6 +1,6 @@
 package com.ahuazhu.soy.cache;
 
-import com.ahuazhu.soy.modal.QuestionKey;
+import com.ahuazhu.soy.model.QuestionKey;
 import com.ahuazhu.soy.utils.Constants;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;

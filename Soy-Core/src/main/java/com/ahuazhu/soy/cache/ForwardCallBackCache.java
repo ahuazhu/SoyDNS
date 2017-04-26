@@ -1,7 +1,7 @@
 package com.ahuazhu.soy.cache;
 
 import com.ahuazhu.soy.forward.ForwardCallBack;
-import com.ahuazhu.soy.modal.QueryKey;
+import com.ahuazhu.soy.model.QueryKey;
 import com.ahuazhu.soy.utils.Constants;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;

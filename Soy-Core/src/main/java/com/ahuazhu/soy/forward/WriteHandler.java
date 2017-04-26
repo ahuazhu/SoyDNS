@@ -1,8 +1,8 @@
 package com.ahuazhu.soy.forward;
 
 import com.ahuazhu.soy.cache.Cache;
-import com.ahuazhu.soy.modal.QuestionKey;
-import com.ahuazhu.soy.modal.ResponseWriter;
+import com.ahuazhu.soy.model.QuestionKey;
+import com.ahuazhu.soy.model.ResponseWriter;
 import org.xbill.DNS.Message;
 
 import java.io.IOException;
