@@ -1,0 +1,11 @@
+
+executor:
+  mode: Disruptor
+
+upstream:
+  - tcp:
+    - 8.8.8.8
+    - 114.114.114.114
+  - udp:
+    - 8.8.8.8
+    - 114.114.114.114
