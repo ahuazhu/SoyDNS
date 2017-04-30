@@ -12,7 +12,9 @@ sudo java -jar Soy-GateKeeper/target/Soy-DoorKeeper-1.0.0-SNAPSHOT.jar
 ```
 ## 原理
 * 高性能
-利用缓存技术，减少向上游的请求。
+利用缓存技术，减少向上游的请求,提升系统吞吐率。
 
 * 抗污染
 利用基于TCP协议
+
+
